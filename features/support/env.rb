@@ -1,14 +1,12 @@
 # frozen_string_literal: true
 
 require 'rest-client'
-require 'active_support/all'
 require_relative 'helpers/rest_wrapper'
 require_relative 'helpers/logger'
 require 'capybara/cucumber'
-require 'selenium-webdriver'
-require_relative 'helpers/class_extentions'
 
-def browser_setup(browser = 'firefox')
+def browser_setup(browser)
+  require 'selenium-webdriver'
   case browser
   when 'chrome'
     Capybara.register_driver :chrome do |app|
@@ -33,7 +31,7 @@ def browser_setup(browser = 'firefox')
     Capybara.page.driver.browser.manage.window.maximize
     Capybara.default_selector = :xpath
     Capybara.default_max_wait_time = 15
-  else
+  when 'firefox'
     Capybara.register_driver :firefox_driver do |app|
       profile = Selenium::WebDriver::Firefox::Profile.new
       Selenium::WebDriver::Firefox.driver_path = 'configuration/geckodriver'
@@ -44,6 +42,8 @@ def browser_setup(browser = 'firefox')
       Capybara::Selenium::Driver.new(app, browser: :firefox, profile: profile, port: Random.rand(7000..7999))
     end
     Capybara.default_driver = :firefox_driver
+  else
+    raise "bad browser #{browser.inspect}"
   end
 end
 browser_setup('chrome')

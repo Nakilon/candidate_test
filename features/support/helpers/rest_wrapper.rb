@@ -9,6 +9,8 @@ class RestWrapper
     @password = password
   end
 
+  Error = Class.new RuntimeError
+
   def get(current_url, _params = {})
     response = RestClient::Request.execute method: :get,
                                            url: compile_full_url(current_url),
@@ -67,7 +69,7 @@ class RestWrapper
                     else
                       "Ошибка #{exception}"
                     end
-    raise raise_message
+    raise Error.new raise_message
   end
 
   def compile_full_url(current_url)
