@@ -7,32 +7,21 @@ require_relative 'helpers/rest_wrapper'
 
 require 'capybara/cucumber'
 def browser_setup(browser)
-  require 'selenium-webdriver'
   case browser
   when 'chrome'
-    Capybara.register_driver :chrome do |app|
-      Selenium::WebDriver::Chrome.driver_path = 'configuration/chromedriver'
-      profile = Selenium::WebDriver::Chrome::Profile.new
-      profile['profile.default_content_settings.popups'] = 0 # custom location
-      profile['browser.helperApps.neverAsk.saveToDisk'] = 'application/octet-stream, text/xml'
-      profile['pdfjs.disabled'] = true
-      Capybara::Selenium::Driver.new(app, browser: :chrome,
-                                          desired_capabilities: Selenium::WebDriver::Remote::Capabilities.chrome(
-                                            'chromeOptions' => {
-                                              'args' => ['--window-size=1920,1080'],
-                                              'prefs' => {
-                                                'download.default_directory' => Dir.pwd + '/features/tmp/',
-                                                'download.prompt_for_download' => false,
-                                                'plugins.plugins_disabled' => ['Chrome PDF Viewer']
-                                              }
-                                            }
-                                          ))
+    require "capybara/cuprite"
+    Capybara.javascript_driver = :cuprite
+    Capybara.default_driver = :cuprite
+    Capybara.current_driver = :cuprite
+    Capybara.register_driver :cuprite do |app|
+      Capybara::Cuprite::Driver.new(app, {
+        browser_options: {"no-sandbox": nil},
+        "headless": "darwin" != Gem::Platform.local.os,
+      } )
     end
-    Capybara.default_driver = :chrome
-    Capybara.page.driver.browser.manage.window.maximize
-    Capybara.default_selector = :xpath
-    Capybara.default_max_wait_time = 15
+    Capybara.save_path = Dir.pwd + '/features/tmp/'
   when 'firefox'
+    require 'selenium-webdriver'
     Capybara.register_driver :firefox_driver do |app|
       profile = Selenium::WebDriver::Firefox::Profile.new
       Selenium::WebDriver::Firefox.driver_path = 'configuration/geckodriver'
