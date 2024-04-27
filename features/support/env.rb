@@ -1,10 +1,11 @@
 # frozen_string_literal: true
 
+require_relative 'helpers/logger'
+
 require 'rest-client'
 require_relative 'helpers/rest_wrapper'
-require_relative 'helpers/logger'
-require 'capybara/cucumber'
 
+require 'capybara/cucumber'
 def browser_setup(browser)
   require 'selenium-webdriver'
   case browser

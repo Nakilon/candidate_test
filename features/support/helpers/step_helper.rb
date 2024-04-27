@@ -3,9 +3,7 @@
 def find_user_id(users_information:, user_login:)
   users_id = []
   users_information.each do |user|
-    next unless user['login'] == user_login
-
-    users_id << user['id']
+    users_id << user['id'] if user['login'] == user_login
   end
   users_id.uniq!
 

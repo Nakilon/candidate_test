@@ -65,7 +65,7 @@ class RestWrapper
     puts exception.inspect
     body = exception.response.body
     raise_message = if body.class == String
-                      "Ошибка #{exception.response.code} с текстом #{JSON.parse(body)}"
+                      "Ошибка #{exception.response.code} с текстом #{body}"
                     else
                       "Ошибка #{exception}"
                     end
